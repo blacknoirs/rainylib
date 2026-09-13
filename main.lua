@@ -596,23 +596,35 @@ end
 
 -- ════════════════════════════════════════════════════════════════════
 --  ICON LOADING
---  Each file in the LucideIcons branch returns the icon data directly.
---  We pass that return value straight into Tab() as the second arg.
+--  Loads PNG icons from the LucideIcons folder in the GitHub repo.
 -- ════════════════════════════════════════════════════════════════════
 
+local ICON_BASE =
+	"https://raw.githubusercontent.com/blacknoirs/rainylib/refs/heads/main/LucideIcons/"
+
 local function loadIcon(name)
+	local fileName = "BlackwareIcon_" .. name .. ".png"
+
 	local ok, result = pcall(function()
-		return loadstring(game:HttpGet(
-			"https://raw.githubusercontent.com/blacknoirs/rainylib/refs/heads/icons/LucideIcons/" .. name .. ".lua"
-		))()
+		if not isfile(fileName) then
+			local data = game:HttpGet(ICON_BASE .. name .. ".png")
+			writefile(fileName, data)
+		end
+
+		return getcustomasset(fileName)
 	end)
-	if ok then return result end
+
+	if ok then
+		return result
+	end
+
 	warn("BlackwareUI: failed to load icon '" .. name .. "': " .. tostring(result))
 	return nil
 end
 
 local crosshairIcon = loadIcon("crosshair")
 local menuIcon      = loadIcon("menu")
+
 
 -- ════════════════════════════════════════════════════════════════════
 --  GAME SCRIPT
